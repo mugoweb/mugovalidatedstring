@@ -1,0 +1,73 @@
+#################################
+Mugo Validated String version 1.0
+#################################
+
+1) Description
+	The Mugo Validated String extension adds a "Text Line (validated)"
+    datatype to your eZ Publish installation. You can an attribute of this
+    datatype to any class.
+    Whenever an object tries to set the value for this attribute, the value
+    is validated according to the validation method selected when the class
+    attribute was created.
+    It is designed to be flexible and very easy to extend. You can validate
+    via a simple regular expression, as shown in the example validators.
+    Or, you can validate using any logic you want, such as looking up an
+    external service to perform the validation.
+
+2) Installation
+	Works as provided:
+            1) Extract the contents under the extension/ directory of your
+            eZ Publish installation and activate it for all siteaccesses.
+            2) Regenerate the autoloads array
+
+3) Requirements
+	The extension was developed under:
+		- eZ Publish 2012.3
+		- PHP 5.3.10
+		- MySQL 5.5.2
+		- Apache 2.2.21
+	This extension may work on earlier version but it has not yet been
+	properly tested for earlier versions.
+
+4) Using the datatype
+        Let's say one of your classes has an attribute that should only have
+        letters or spaces in the value (no numbers, etc.):
+            a. go in the Setup/Classes section of the eZ Publish administration
+            b. select the class for which you wish to add attribute validation and click the edit button
+            c. select the datatype as "Text line (validated)" and add a new attribute
+            d. select the "Only letters or spaces" option for that specific Attribute's "validation type"
+
+5) Extending & writing your own validation
+        To write your own validation method:
+            a. In an override of the mugodatatypes.ini settings file, add your validation method, description and class name
+                to the arrays: ValidationTypes[], ValidationTypesDescriptions[], ValidationTypesClasses[]
+            b. Create the class with the name you specified in the ValidationTypesClasses[] array,
+                inside your extension's classes folder. Your class has to override the "validate()"
+                and your own "validate()" function must set the validation error messages. Here's an example
+                of a validation type class, that validates input via a simple regular expression:
+                ----------------------------------------------------------------------------------------------
+                class MugoSampleValidationType extends MugoValidationType {
+                    public function validate( $text )
+                    {
+                        //your regular expression
+                        $acceptedExpression = "/^[a-z]+$/";
+
+                        //the error message displayed if the regular expression is not matched
+                        $errorMessage       = "This field can only contain letters and spaces";
+
+                        //if the input is matched to the accepted expression and return true
+                        if( preg_match( $acceptedExpression, $text ) )
+                        {
+                            return true;
+                        }
+                        //otherwise, set the class errormessage and return false
+                        else
+                        {
+                            $this->errorMessage = ezpI18n::tr( 'mugovalidatedstring', $errorMessage );
+                            return false;
+                        }
+                    }
+                }
+                ===============================================================================================
+            c. Regenerate the autoloads array
+            d. The new validation type should now be in the system
