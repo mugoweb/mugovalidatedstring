@@ -4,7 +4,7 @@
  * datatype. It uses the custom MugoValidationType php class to run
  * the validation.
  *
- * @author Cosmin Atanasiu
+ * @author mugodev
  */
 class MugoDatatypeValidator
 {
