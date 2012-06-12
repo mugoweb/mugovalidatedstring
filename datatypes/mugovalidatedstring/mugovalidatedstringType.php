@@ -72,9 +72,17 @@ class mugovalidatedstringType extends eZDataType
             return eZInputValidator::STATE_INVALID;
         }
 
-        $this->DataTypeValidator->setValidationType($validationType);
-        $this->DataTypeValidator->setContentObjectAttribute($contentObjectAttribute);
-        return $this->DataTypeValidator->validate( $data );
+        $this->DataTypeValidator->setValidationType( $validationType );
+
+        if( $this->DataTypeValidator->validate( $data ) != eZInputValidator::STATE_ACCEPTED )
+        {
+            $contentObjectAttribute->setValidationError( $this->DataTypeValidator->getErrorMessage() );
+            return eZInputValidator::STATE_INVALID;
+        }
+        else
+        {
+            return eZInputValidator::STATE_ACCEPTED;
+        }
     }
 
 

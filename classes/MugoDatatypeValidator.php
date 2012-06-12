@@ -12,24 +12,12 @@ class MugoDatatypeValidator
      * @var MugoValidationType
      */
     protected $validationType;
-    /**
-     * used for error messages
-     */
-    protected $ContentObjectAttribute;
+
+    protected $errorMessage;
 
     function __construct( $validationType = null )
     {
         $this->setValidationType( $validationType );
-    }
-
-    /**
-     * This function sets the contentObjectAttribute that will be used to set
-     * error messages from inside this function.
-     * @param type $ContentObjectAttribute
-     */
-    function setContentObjectAttribute(&$ContentObjectAttribute )
-    {
-        $this->ContentObjectAttribute = $ContentObjectAttribute;
     }
 
     function setValidationType( $validationType )
@@ -47,16 +35,22 @@ class MugoDatatypeValidator
     {
         if( $this->validationType == null )
         {
-            $this->ContentObjectAttribute->setValidationError( "Unknown error occurred. Please contact your site administrator." );
+            $this->errorMessage = ezpI18n::tr( "mugovalidatedstring", "Unknown error occurred. Please contact your site administrator." );
             return eZInputValidator::STATE_INVALID;
         }
         if( !$this->validationType->validate( $text ) )
         {
-            $this->ContentObjectAttribute->setValidationError( $this->validationType->getErrorMessage() );
+            $this->errorMessage = $this->validationType->getErrorMessage();
             return eZInputValidator::STATE_INVALID;
         }
 
+        $this->errorMessage = null;
         return eZInputValidator::STATE_ACCEPTED;
+    }
+
+    function getErrorMessage()
+    {
+        return $this->errorMessage;
     }
 
 }
